@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html style="overflow-y: auto">
+  <head>
+    <meta charset="utf-8">
+    <title>JavaScript Integration Tests</title>
+    <link rel="stylesheet" href="../lib/mocha.css" />
+
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script src="../lib/chai.js"></script>
+    <script src="../lib/mocha.js"></script>
+    <script src="../lib/sinon.js"></script>
+
+    <script>
+      window.expect = chai.expect;
+      mocha.setup('bdd');
+    </script>
+
+    <script src="../lib/openpgp.min.js"></script>
+    <script src="../lib/forge.min.js"></script>
+    <script src="index.js"></script>
+
+    <script>
+      if (window.mochaPhantomJS) {
+        mochaPhantomJS.run();
+      } else {
+        setTimeout(function() {
+          mocha.run();
+        }, 1000)
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<div class="lightbox__body" ng-controller="WriteCtrl">
+  <header class="lightbox__header">
+    <h2>{{writerTitle}}</h2>
+    <button class="lightbox__close" wo-touch="state.writer.close()" data-action="lightbox-close">
+      <svg><use xlink:href="#icon-close" /><title>关闭</title></svg>
+    </button>
+  </header>
+  <div class="lightbox__content write">
+
+    <header class="write__header">
+      <div class="mail-addresses"
+        focus-input="state.lightbox === 'write' && writerTitle !== 'Reply'"
+        focus-input-on-click>
+        <div class="mail-addresses__more">
+          <!--<button wo-touch="showCC = true;" ng-hide="showCC">Cc</button>
+          <button wo-touch="toggleShowBCC()" ng-hide="showBCC">Bcc</button>-->
+        </div>
+        <label>收件:</label>
+        <tags-input class="tags-input" ng-model="to" type="email" tabindex="1" add-on-space="true" add-on-enter="true" enable-editing-last-tag="true"
+          tag-style="tagStyle" display-property="displayId" on-tag-added="verify($tag)" on-tag-removed="checkSendStatus()"
+          placeholder="添加">
+          <auto-complete source="lookupAddressBook($query)" min-length="1"></auto-complete>
+        </tags-input>
+      </div>
+      <div class="mail-addresses" ng-show="showCC === true"
+         focus-input-on-click>
+        <label>抄送:</label>
+        <tags-input class="tags-input" ng-model="cc" type="email" tabindex="1" add-on-space="true" add-on-enter="true" enable-editing-last-tag="true"
+          tag-style="tagStyle" display-property="displayId" on-tag-added="verify($tag)" on-tag-removed="checkSendStatus()"
+          placeholder="添加">
+          <auto-complete source="lookupAddressBook($query)" min-length="1"></auto-complete>
+        </tags-input>
+      </div>
+      <div class="mail-addresses" ng-show="showBCC === true"
+         focus-input-on-click>
+        <label>Bcc:</label>
+        <tags-input class="tags-input" ng-model="bcc" type="email" tabindex="1" add-on-space="true" add-on-enter="true" enable-editing-last-tag="true"
+          tag-style="tagStyle" display-property="displayId" on-tag-added="verify($tag)" on-tag-removed="checkSendStatus()"
+          placeholder="add bcc">
+          <auto-complete source="lookupAddressBook($query)" min-length="1"></auto-complete>
+        </tags-input>
+      </div>
+
+      <div class="write__invite" ng-show="showInvite">
+        <p>
+          <svg role="presentation"><use xlink:href="#icon-decrypted"/></svg>
+          <strong>Key not found!</strong>
+          <span class="u-hidden-sm">Invite user to encrypt.</span>
+        </p>
+        <button class="btn btn--light" wo-touch="invite()" title="Invite to Whiteout Mail">
+          <svg role="presentation"><use xlink:href="#icon-add_contact"/></svg>
+          Invite
+        </button>
+      </div>
+
+      <div class="write__subject">
+        <input class="input-text" ng-model="subject" spellcheck="true" tabindex="2" placeholder="主题" ng-change="updatePreview()">
+        <input id="attachment-input" type="file" multiple attachment-input>
+        <button class="btn" ng-class="{'btn--invalid': sendBtnSecure === false}" wo-click-file-input="#attachment-input">
+          <svg><use xlink:href="#icon-attachment" /><title>Add attachment</title></svg>
+        </button>
+      </div>
+
+      <ul class="attachments" ng-show="attachments.length > 0">
+        <li ng-repeat="attachment in attachments">
+          <svg><use xlink:href="#icon-attachment" /></svg>
+          {{attachment.filename}}
+          <button class="attachments__delete" wo-touch="remove(attachment)">
+            <svg><use xlink:href="#icon-close_circle" /><title>Delete</title></svg>
+          </button>
+        </li>
+      </ul>
+    </header>
+
+    <textarea class="write__body" ng-model="body" spellcheck="true" wo-focus-me="state.lightbox === 'write' && writerTitle === 'Reply'" tabindex="3" placeholder="邮件正文"></textarea>
+  </div><!--/write-->
+
+  <footer class="lightbox__controls">
+    <button wo-touch="sendToOutbox()" class="btn" ng-class="{'btn--invalid': sendBtnSecure === false}"
+      ng-disabled="!okToSend" tabindex="4">{{sendBtnText || '发送'}}</button>
+  </footer>
+</div><!--/lightbox__body-->

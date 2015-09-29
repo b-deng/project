@@ -1,0 +1,199 @@
+.read {
+    $padding-horizontal: 15px;
+    $padding-vertical: 10px;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    // Toolbars
+
+    &__folder-toolbar {
+        flex-shrink: 0;
+        border-bottom: 1px solid $color-border-light;
+        @include respond-to(md) {
+            display: none;
+        }
+    }
+    &__action-toolbar {
+        flex-shrink: 0;
+        border-top: 1px solid $color-border-light;
+        @include respond-to(md) {
+            display: none;
+        }
+    }
+    &__working {
+        position: relative;
+        flex-grow: 1;
+        padding: 0 $padding-horizontal;
+        & > div {
+            @include scut-vcenter-tt;
+            width: 100%;
+            text-align: center;
+            font-size: $font-size-bigger;
+
+            strong {
+                color: $color-text-light;
+                vertical-align: middle;
+            }
+        }
+    }
+    &__content {
+        flex-grow: 1;
+        overflow: auto;
+        // allow scrolling on iOS
+        -webkit-overflow-scrolling: touch;
+    }
+
+    // Header components
+
+    &__header {
+        margin-bottom: 1em;
+        padding: $padding-vertical $padding-horizontal 0;
+
+        & > .attachments {
+            margin-top: 1em;
+        }
+
+        .signature-status {
+            & > svg {
+                vertical-align: middle;
+                width: 1.5em;
+                height: 1.5em;
+                margin-bottom: .2em;
+                fill: $color-main;
+            }
+        }
+        .signature-status--invalid {
+            & > svg {
+                fill: $color-error-area;
+            }
+        }
+    }
+    // only visible in stripped version of read view
+    .mail-addresses__stripped {
+        display: none;
+    }
+    &__controls {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: $scrollbar-width; // don't cover scrollbar
+        padding: $padding-vertical $padding-horizontal;
+        background-color: $color-white;
+        z-index: 999; // places the buttons on top of the content
+        .btn-icon-light + .btn-icon-light {
+            margin-left: 1.4em;
+        }
+        @include respond-to(md) {
+            display: block;
+        }
+    }
+    &__controls__dummy {
+        display: none;
+        float: right;
+        // the size of the real controls
+        width: 242px;
+        height: 39px;
+        @include respond-to(md) {
+            display: block;
+        }
+    }
+    &__subject {
+        font-weight: normal;
+        color: $color-text;
+        font-size: $font-size-bigger;
+        margin: 0 0 0.2em;
+        &.wo-touch-active {
+            background: $color-touch-active;
+        }
+        .btn-icon-very-light {
+            float: right;
+            margin-left: 1em;
+        }
+
+        @include respond-to(md) {
+            display: none;
+        }
+    }
+    &__subject-md {
+        display: none;
+        font-size: $font-size-bigger;
+        font-weight: normal;
+        margin: 0 0 0.2em;
+        & > svg {
+            display: none;
+            fill: $color-main;
+            vertical-align: baseline;
+            height: 0.8em;
+            width: 0.8em;
+        }
+
+        @include respond-to(md) {
+            display: block;
+        }
+        @include respond-to(lg) {
+            cursor: pointer;
+            & > svg {
+                display: inline-block;
+            }
+            &.wo-touch-active {
+                background: $color-touch-active;
+            }
+        }
+    }
+    &__time {
+        display: block;
+        color: $color-text-light;
+        font-size: $font-size-small;
+        margin-bottom: 20px;
+    }
+
+    // Content components
+
+    &__display-images {
+        margin-bottom: 0.5em;
+        text-align: center;
+        padding: 0 $padding-horizontal;
+    }
+    &__body {
+        padding: 0 $padding-horizontal $padding-vertical;
+        overflow: hidden; // necessary due to iframe scaling via transitions
+
+        iframe {
+            border: none;
+            min-width: 100%;
+        }
+    }
+
+    // Modifiers
+
+    &--no-attachments {
+        .read__header {
+            margin-bottom: 0.5em;
+            &:after {
+                display: block;
+                content: "";
+                margin-top: 0.5em;
+                border-bottom: 1px solid $color-border-light;
+            }
+        }
+    }
+    @include respond-to(smaller-md) {
+        &--stripped {
+            .read__addresses > * {
+                display: none;
+                &:first-child {
+                    display: block;
+                }
+            }
+            .mail-addresses__stripped {
+                display: inline;
+            }
+            .read__sender-address {
+                display: none;
+            }
+        }
+    }
+}

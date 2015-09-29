@@ -1,0 +1,60 @@
+.label {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    font-size: $font-size-small;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 1em;
+    white-space: nowrap;
+    background-color: $color-main;
+    color: $color-main-text;
+    transition: background-color 0.3s;
+
+    & > svg {
+        display: inline-block;
+        fill: $color-main-text;
+        width: 1.5em;
+        height: 1.3em;
+        vertical-align: middle;
+        margin-top: -0.1em; // move upwards to optimize vertical alignment with label text
+    }
+
+    &--invalid {
+        background-color: $color-error-area;
+        color: $color-error-text;
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAJUlEQVQIW2NkQABJIPM5lCvJCGMgC4LYIAkUlTAFMB0gjRQaBQCw8go5lVnl5wAAAABJRU5ErkJggg==);
+
+        & > svg {
+            fill: $color-error-text;
+        }
+
+        @include scut-hd-bp {
+            background-size: 3px 3px;
+        }
+    }
+
+    &--invalid-clickable {
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($color-error-area, 5%);
+        }
+
+        &:active {
+            transform: translateX(1px) translateY(1px);
+        }
+    }
+
+    &--blank {
+        background-color: transparent;
+        color: $color-black;
+        text-align: left;
+        padding-left: 0;
+        padding-right: 0;
+
+        & > svg {
+            fill: $color-black;
+        }
+    }
+}

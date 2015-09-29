@@ -1,0 +1,34 @@
+<div class="app" ng-class="{'app--show-aside': state.nav.open}">
+  <aside class="app__aside">
+    <div class="app__aside-scroll" ng-include="'tpl/nav.html'"></div>
+    <footer class="nav-footer" ng-include="'tpl/status-display.html'"></footer>
+  </aside>
+  <div class="app__container" ng-click="state.nav.toggle(false)">
+    <header class="app__header" ng-include="'tpl/action-bar.html'"></header>
+    <main class="app__main">
+      <div class="mail-list-wrapper" ng-class="{'mail-list-wrapper--show-aside': !state.read.open}">
+        <aside class="mail-list-wrapper__aside" ng-include="'tpl/mail-list.html'"></aside>
+        <div class="mail-list-wrapper__container" ng-include="'tpl/read.html'"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- lightbox  -->
+<div class="lightbox" ng-class="{'lightbox--show': state.lightbox === 'write'}"
+  ng-include="'tpl/write.html'"></div>
+
+<div class="lightbox lightbox--dialog" ng-class="{'lightbox--show': state.lightbox === 'account'}"
+  ng-include="'tpl/account.html'"></div>
+
+<div class="lightbox lightbox--dialog" ng-class="{'lightbox--show': state.lightbox === 'set-passphrase'}"
+  ng-include="'tpl/set-passphrase.html'"></div>
+
+<div class="lightbox" ng-class="{'lightbox--show': state.lightbox === 'publickey-import'}"
+  ng-include="'tpl/publickey-import.html'"></div>
+
+<div class="lightbox" ng-class="{'lightbox--show': state.lightbox === 'contacts'}"
+  ng-include="'tpl/contacts.html'"></div>
+
+<div class="lightbox lightbox--dialog" ng-class="{'lightbox--show': state.lightbox === 'about'}"
+  ng-include="'tpl/about.html'"></div>

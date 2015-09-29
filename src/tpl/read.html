@@ -1,0 +1,196 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<div class="read" ng-controller="ReadCtrl"
+  ng-class="{
+    'read--no-attachments': !state.mailList.selected.attachments || state.mailList.selected.attachments.length === 0,
+    'read--stripped': !notStripped
+  }">
+
+  <div class="read__folder-toolbar">
+    <div class="toolbar">
+      <a class="toolbar__label" href="#" wo-touch="$event.preventDefault(); close()">
+        <svg><use xlink:href="#icon-back" /><title>返回</title></svg>
+        <!--{{state.nav.currentFolder.wellknown ? state.nav.currentFolder.type : state.nav.currentFolder.name}}-->
+        {{state.nav.currentFolder.wellknown ? (state.nav.currentFolder.type === 'Inbox' ? '收件箱' : (state.nav.currentFolder.type === 'Outbox' ? '发件箱' : (state.nav.currentFolder.type === 'Sent' ? '已发邮件' : (state.nav.currentFolder.type === 'Drafts' ? '草稿箱' : (state.nav.currentFolder.type === 'Trash' ? '垃圾箱' : (state.nav.currentFolder.type === 'Flagged' ? '标签邮件' : '')))))) : state.nav.currentFolder.name}}
+      </a>
+    </div>
+  </div><!--/read__folder-toolbar-->
+
+  <div class="read__controls">
+    <span class="u-hidden-lg" ng-controller="ActionBarCtrl">
+      <button wo-touch="flagMessage(state.mailList.selected, !state.mailList.selected.flagged)" class="btn-icon-light" title="{{state.mailList.selected.flagged ? '移除标签' : '添加标签'}}">
+        <svg ng-show="state.mailList.selected.flagged"><use xlink:href="#icon-star_filled" /><title>已加标签</title></svg>
+        <svg ng-show="!state.mailList.selected.flagged"><use xlink:href="#icon-star" /><title>未加标签</title></svg>
+      </button>
+      <button class="btn-icon-light" title="移动邮件" wo-dropdown="#read-dropdown-folder" wo-dropdown-position="center">
+        <svg><use xlink:href="#icon-folder" /><title>移动邮件</title></svg>
+      </button>
+      <button wo-touch="deleteMessage(state.mailList.selected)" class="btn-icon-light" title="删除邮件">
+        <svg><use xlink:href="#icon-delete" /><title>删除邮件</title></svg>
+      </button>
+      <button class="btn-icon-light" title="回复" wo-dropdown="#read-reply-selection" wo-dropdown-position="center">
+        <svg><use xlink:href="#icon-reply_light" /><title>回复</title></svg>
+      </button>
+      <button wo-touch="state.writer.write()" class="btn-icon-light" title="新邮件">
+        <svg><use xlink:href="#icon-write" /><title>新邮件</title></svg>
+      </button>
+    </span>
+
+    <span class="u-visible-lg">
+      <button class="btn-icon-light" wo-touch="state.writer.write(state.mailList.selected)" title="回复"><svg><use xlink:href="#icon-reply_light" /></svg></button>
+      <button class="btn-icon-light" wo-touch="state.writer.write(state.mailList.selected, true)" title="回复所有"><svg><use xlink:href="#icon-reply_all_light" /></svg></button>
+      <button class="btn-icon-light" wo-touch="state.writer.write(state.mailList.selected, null, true)" title="转发"><svg><use xlink:href="#icon-forward_light" /></svg></button>
+    </span>
+  </div><!--/read__controls-->
+
+  <!-- working spinner -->
+  <div class="read__working"
+    ng-if="state.mailList.selected && state.mailList.selected.html === undefined && (state.mailList.selected.body === undefined || (state.mailList.selected.encrypted && !state.mailList.selected.decrypted))">
+    <div>
+      <span class="spinner"></span>
+      <strong ng-bind="(state.mailList.selected.decryptingBody) ? '解密...' : '加载...' "></strong>
+    </div>
+  </div><!--/read__working-->
+
+  <div class="read__content"
+    ng-show="(state.mailList.selected && !state.mailList.selected.encrypted) || (state.mailList.selected.encrypted && state.mailList.selected.decrypted)">
+    <header class="read__header">
+      <div class="read__controls__dummy"></div>
+
+      <h2 class="read__subject" wo-touch="notStripped = !notStripped">
+        <button ng-hide="notStripped" class="btn-icon-very-light">
+          <svg><use xlink:href="#icon-dropdown" /><title>更多</title></svg>
+        </button>
+        <button ng-show="notStripped" class="btn-icon-very-light">
+          <svg><use xlink:href="#icon-dropup" /><title>更少</title></svg>
+        </button>
+
+        {{state.mailList.selected.subject ? state.mailList.selected.subject : '无主题'}}
+      </h2>
+      <h2 class="read__subject-md" wo-touch="close()">
+        <svg><use xlink:href="#icon-back" /><title>返回</title></svg>
+        {{state.mailList.selected.subject ? state.mailList.selected.subject : '无主题'}}
+      </h2>
+      <time class="read__time">{{state.mailList.selected.sentDate | date:'EEEE, MMM d, yyyy h:mm a'}}</time>
+
+      <div class="read__addresses">
+        <div class="mail-addresses">
+          <label>发件:</label>
+          <span ng-repeat="u in state.mailList.selected.from">
+            <span class="label" ng-class="{'label--invalid': u.secure === false, 'label--invalid-clickable': u.secure === false}"  wo-touch="invite(u)">
+              {{u.name || u.address}} <span ng-show="u.name" ng-class="{'read__sender-address': !notStripped}">&#60; {{u.address}} &#62;</span>
+              <svg ng-show="u.secure === false"><use xlink:href="#icon-add_contact" /></svg>
+            </span>
+
+            <span ng-show="(state.mailList.selected.body || state.mailList.selected.html) && state.mailList.selected.signed"
+              class="signature-status" ng-class="{'signature-status--invalid': !state.mailList.selected.signaturesValid}" wo-tooltip="#signature-info">
+              <svg ng-show="state.mailList.selected.signaturesValid"><use xlink:href="#icon-signature-verified" /></svg>
+              <svg ng-show="!state.mailList.selected.signaturesValid"><use xlink:href="#icon-signature-invalid" /></svg>
+            </span>
+
+            <span class="mail-addresses__stripped"></span>
+          </span>
+        </div>
+        <div class="mail-addresses">
+          <label>收件:</label>
+          <span ng-repeat="u in state.mailList.selected.to">
+            <span class="label" ng-class="{'label--invalid': u.secure === false, 'label--invalid-clickable': u.secure === false}"  wo-touch="invite(u)">
+              {{u.name || u.address}}
+              <svg ng-show="u.secure === false"><use xlink:href="#icon-add_contact" /></svg>
+            </span>
+          </span>
+        </div>
+        <div class="mail-addresses" ng-show="state.mailList.selected.cc && state.mailList.selected.cc.length > 0">
+          <label>抄送:</label>
+          <span ng-repeat="u in state.mailList.selected.cc">
+            <span class="label" ng-class="{'label--invalid': u.secure === false, 'label--invalid-clickable': u.secure === false}"  wo-touch="invite(u)">
+              {{u.name || u.address}}
+              <svg ng-show="u.secure === false"><use xlink:href="#icon-add_contact" /></svg>
+            </span>
+          </span>
+        </div>
+      </div><!--/read__addresses-->
+
+      <ul class="attachments" ng-show="state.mailList.selected.attachments !== undefined && state.mailList.selected.attachments.length > 0">
+        <li ng-repeat="attachment in state.mailList.selected.attachments"
+          wo-touch="download(attachment)">
+          <span ng-if="attachment.busy" class="spinner"></span>
+          <svg ng-hide="attachment.busy"><use xlink:href="#icon-attachment" /></svg>
+          {{attachment.filename}}
+        </li>
+      </ul>
+    </header><!--/read__header-->
+
+    <div class="read__display-images" ng-show="state.mailList.selected.html && showImageButton">
+      <button class="btn btn--light" wo-touch="displayImages()">显示图片</button>
+    </div>
+
+    <div class="read__body">
+      <!-- Render html body in sandboxed iframe -->
+      <iframe sandbox="allow-popups allow-scripts" ng-src="tpl/read-sandbox.html" scrolling="no" frame-load></iframe>
+    </div>
+  </div><!--/read__content-->
+
+  <div class="read__action-toolbar" ng-controller="ActionBarCtrl">
+    <div class="toolbar">
+      <ul class="toolbar__actions">
+        <li>
+          <button wo-touch="flagMessage(state.mailList.selected, !state.mailList.selected.flagged)" class="btn-icon-light" title="{{state.mailList.selected.flagged ? '移除标签' : '添加标签'}}">
+            <svg ng-show="state.mailList.selected.flagged"><use xlink:href="#icon-star_filled" /><title>已加标签</title></svg>
+            <svg ng-show="!state.mailList.selected.flagged"><use xlink:href="#icon-star" /><title>未加标签</title></svg>
+          </button>
+        </li>
+        <li>
+          <button class="btn-icon-light" title="移动邮件" wo-dropdown="#read-dropdown-folder" wo-dropdown-position="center up">
+            <svg><use xlink:href="#icon-folder" /><title>移动邮件</title></svg>
+          </button>
+        </li>
+        <li>
+          <button wo-touch="deleteMessage(state.mailList.selected)" class="btn-icon-light" title="删除邮件">
+            <svg><use xlink:href="#icon-delete" /><title>删除邮件</title></svg>
+          </button>
+        </li>
+        <li>
+          <button class="btn-icon-light" title="回复" wo-dropdown="#read-reply-selection" wo-dropdown-position="center up">
+            <svg><use xlink:href="#icon-reply_light" /><title>回复</title></svg>
+          </button>
+        </li>
+        <li>
+          <button wo-touch="state.writer.write()" class="btn-icon-light" title="新邮件">
+            <svg><use xlink:href="#icon-write" /><title>新邮件</title></svg>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div><!--/read__action-toolbar-->
+
+  <!-- tooltips -->
+  <div id="fingerprint-info" class="tooltip">
+    <div class="tooltip__arrow"></div>
+    <div class="tooltip__content">{{keyId}}</div>
+  </div>
+  <div id="signature-info" class="tooltip">
+    <div class="tooltip__arrow"></div>
+    <div ng-show="state.mailList.selected.signaturesValid" class="tooltip__content">Message signature is valid.</div>
+    <div ng-show="!state.mailList.selected.signaturesValid" class="tooltip__content">Invalid message signature. This message could have been tampered with!</div>
+  </div>
+
+  <!-- dropdowns -->
+  <ul id="read-reply-selection" class="dropdown">
+    <li><button wo-touch="state.writer.write(state.mailList.selected)"><svg><use xlink:href="#icon-reply_light" /></svg> 回复</button></li>
+    <li><button wo-touch="state.writer.write(state.mailList.selected, true)"><svg><use xlink:href="#icon-reply_all_light" /></svg> 回复所有</button></li>
+    <li><button wo-touch="state.writer.write(state.mailList.selected, null, true)"><svg><use xlink:href="#icon-forward_light" /></svg> 转发</button></li>
+  </ul><!--/dropdown-->
+
+  <ul id="read-dropdown-folder" class="dropdown" ng-controller="ActionBarCtrl">
+    <li ng-repeat="folder in account.folders">
+      <button wo-touch="moveMessage(state.mailList.selected, folder)">
+        <svg><use xlink:href="#icon-folder" /></svg>
+        <!--{{folder.wellknown ? folder.type : folder.name}}-->
+        {{folder.wellknown ? (folder.type === 'Inbox' ? '收件箱' : (folder.type === 'Outbox' ? '发件箱' : (folder.type === 'Sent' ? '已发邮件' : (folder.type === 'Drafts' ? '草稿箱' : (folder.type === 'Trash' ? '垃圾箱' : (folder.type === 'Flagged' ? '标签邮件' : '')))))) : folder.name}}
+      </button>
+    </li>
+  </ul><!--/dropdown-->
+
+</div><!--/read-->

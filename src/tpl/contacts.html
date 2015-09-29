@@ -1,0 +1,48 @@
+<div class="lightbox__body" ng-controller="ContactsCtrl">
+  <header class="lightbox__header">
+    <h2>Contacts</h2>
+    <button class="lightbox__close" wo-touch="state.contacts.toggle(false)" data-action="lightbox-close">
+      <svg><use xlink:href="#icon-close" /><title>Close</title></svg>
+    </button>
+  </header>
+  <div class="lightbox__content">
+    <div class="form-input-with-button u-gap-bottom">
+      <input class="input-text" type="text" placeholder="Filter..." ng-model="searchText">
+      <button class="btn" wo-touch="state.contacts.toggle(false); state.publickeyImport.toggle(true)">Import keys</button>
+    </div>
+
+    <p class="typo-paragraph u-text-center" ng-show="!keys.length">
+      There are no contacts, yet.
+    </p>
+
+    <ul class="contacts">
+      <li class="contacts__contact" ng-repeat="key in keys | orderBy:'fullUserId' | filter:searchText"
+        ng-class="{ 'contacts__contact--open': key.open }">
+        <div class="contacts__delete">
+          <button class="btn-icon-very-light" wo-touch="removeKey(key)">
+            <svg><use xlink:href="#icon-close" /><title>Delete</title></svg>
+          </button>
+        </div>
+
+        <h3 class="contacts__title" wo-touch="key.open = !key.open">{{key.fullUserId}}</h3>
+        <p class="contacts__short-description">
+          {{key._id.slice(8)}}
+        </p>
+        <dl class="contacts__long-description">
+          <dt>Fingerprint</dt>
+          <dd wo-fingerprint>{{key.fingerprint}}</dd>
+
+          <dt>Size</dt>
+          <dd>{{key.bitSize}} bit</dd>
+
+          <dt>Created</dt>
+          <dd>{{key.created | date:'mediumDate'}}</dd>
+
+          <dt>Source</dt>
+          <dd>{{key.imported ? 'Imported' : key.source || whiteoutKeyServer}}</dd>
+        </dl>
+      </li>
+    </ul>
+  </div>
+
+</div>

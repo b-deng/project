@@ -1,0 +1,58 @@
+﻿<div class="action-bar" ng-controller="ActionBarCtrl">
+  <div class="action-bar__primary">
+    <button class="btn btn--light-dropdown" ng-hide="state.read.open" wo-dropdown="#dropdown-checkmessages">
+      <svg role="presentation"><use xlink:href="#icon-check" />Check messages</svg>
+      <svg class="btn__dropdown" role="presentation"><use xlink:href="#icon-dropdown" /></svg>
+    </button>
+    <button class="btn btn--light" wo-touch="state.read.open ? deleteMessage(state.mailList.selected) : deleteCheckedMessages()">删除</button>
+    <button class="btn btn--light" wo-touch="state.read.open ? moveMessage(state.mailList.selected, getJunkFolder()) : moveCheckedMessages(getJunkFolder())">垃圾邮件</button>
+    <button class="btn btn--light-dropdown" wo-dropdown="#dropdown-folder">
+      <svg><use xlink:href="#icon-folder" /><title>Folder</title></svg>
+      <svg class="btn__dropdown" role="presentation"><use xlink:href="#icon-dropdown" /></svg>
+    </button>
+  </div><!--/action-bar__primary-->
+
+  <div class="action-bar__secondary">
+    <button class="btn btn--light-dropdown" wo-dropdown="#dropdown-more">
+      更多
+      <svg class="btn__dropdown" role="presentation"><use xlink:href="#icon-dropdown" /></svg>
+    </button>
+  </div><!--/action-bar__secondary-->
+
+  <div class="action-bar__search">
+    <div class="search search--light">
+      <svg><use xlink:href="#icon-search" /><title>搜索</title></svg>
+      <input class="input-text" type="text" ng-model="searchText"
+        ng-change="displaySearchResults(searchText)"
+        placeholder="搜索" wo-focus-me="state.mailList.searching">
+    </div>
+  </div><!--/action-bar__search-->
+
+  <!-- dropdowns -->
+  <ul id="dropdown-folder" class="dropdown">
+    <li ng-repeat="folder in account.folders">
+      <button wo-touch="state.read.open ? moveMessage(state.mailList.selected, folder) : moveCheckedMessages(folder)">
+        <svg><use xlink:href="#icon-folder" /></svg>
+        {{folder.wellknown ? (folder.type === 'Inbox' ? '收件箱' : (folder.type === 'Outbox' ? '发件箱' : (folder.type === 'Sent' ? '已发邮件' : (folder.type === 'Drafts' ? '草稿箱' : (folder.type === 'Trash' ? '垃圾箱' : (folder.type === 'Flagged' ? '标签邮件' : '')))))) : folder.name}}
+      </button>
+    </li>
+  </ul><!--/dropdown-->
+
+  <ul id="dropdown-checkmessages" class="dropdown">
+    <li><button wo-touch="check(CHECKALL)">全选</button></li>
+    <li><button wo-touch="check(CHECKNONE)">取消所选</button></li>
+    <li><button wo-touch="check(CHECKENCRYPTED)">加密邮件</button></li>
+    <li><button wo-touch="check(CHECKUNENCRYPTED)">未加密邮件</button></li>
+    <li><button wo-touch="check(CHECKUNREAD)">未读邮件</button></li>
+    <li><button wo-touch="check(CHECKREAD)">已读邮件</button></li>
+    <li><button wo-touch="check(CHECKFLAGGED)">标签邮件</button></li>
+    <li><button wo-touch="check(CHECKUNFLAGGED)">未标签邮件</button></li>
+  </ul><!--/checkmessages-->
+
+  <ul id="dropdown-more" class="dropdown">
+    <li><button wo-touch="state.read.open ? markMessage(state.mailList.selected, false) : markCheckedMessages(false)">标记为已读</button></li>
+    <li><button wo-touch="state.read.open ? markMessage(state.mailList.selected, true) : markCheckedMessages(true)">标记为未读</button></li>
+    <li><button wo-touch="state.read.open ? flagMessage(state.mailList.selected, true) : flagCheckedMessages(true)">添加标签</button></li>
+    <li><button wo-touch="state.read.open ? flagMessage(state.mailList.selected, false) : flagCheckedMessages(false)">移除标签</button></li>
+  </ul><!--/dropdown-->
+</div>

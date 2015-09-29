@@ -1,0 +1,88 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<div class="mail-list" ng-controller="MailListCtrl">
+
+  <header wo-touch="state.nav.toggle(true); $event.stopPropagation()">
+    <div>
+      <button class="btn-navicon">
+        <svg><use xlink:href="#icon-navicon" /><title>切换导航</title></svg>
+      </button>
+      <!--<h2>{{state.nav.currentFolder.wellknown ? state.nav.currentFolder.type : state.nav.currentFolder.name}}</h2>-->
+      <h2>{{state.nav.currentFolder.wellknown ? (state.nav.currentFolder.type === 'Inbox' ? '收件箱' : (state.nav.currentFolder.type === 'Outbox' ? '发件箱' : (state.nav.currentFolder.type === 'Sent' ? '已发邮件' : (state.nav.currentFolder.type === 'Drafts' ? '草稿箱' : (state.nav.currentFolder.type === 'Trash' ? '垃圾箱' : (state.nav.currentFolder.type === 'Flagged' ? '标签邮件' : '')))))) : state.nav.currentFolder.name}}</h2>
+    </div>
+
+    <button class="btn-icon-light" title="新邮件" wo-touch="state.writer.write(); $event.stopPropagation()">
+      <svg><use xlink:href="#icon-write" /><title>新邮件</title></svg>
+    </button>
+  </header>
+
+  <div class="mail-list__search">
+    <div class="search">
+      <svg><use xlink:href="#icon-search" /><title>搜索</title></svg>
+      <input class="input-text" type="text" ng-model="searchText"
+        ng-change="displaySearchResults(searchText)"
+        placeholder="搜索" wo-focus-me="state.mailList.searching">
+    </div>
+  </div>
+
+  <div class="mail-list__scroll-canvas" list-scroll="displayMessages">
+    <ul class="mail-list__entries" infinite-scroll="displayMore()"
+      infinite-scroll-distance="1" infinite-scroll-parent="true">
+      <li class="mail-list-entry"
+        ng-class="{'mail-list-entry--active': email === state.mailList.selected, 'mail-list-entry--unread': email.unread, 'mail-list-entry--attachment': email.attachments !== undefined && email.attachments.length > 0}"
+        wo-touch="navigate(email)"
+        ng-repeat="email in displayMessages track by email.uid">
+        <ul class="mail-list-entry__flags">
+          <li class="mail-list-entry__flags-unread"></li>
+          <li class="mail-list-entry__flags-checked" wo-touch="$event.stopPropagation()">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="email.checked">
+              <span><svg role="presentation"><use xlink:href="#icon-check" /></svg></span>
+            </label>
+          </li>
+          <li ng-show="email.from" class="mail-list-entry__flags-flagged" wo-touch="flag(email, !email.flagged); $event.stopPropagation()">
+            <svg ng-show="email.flagged"><use xlink:href="#icon-star_filled" /><title>已加标签</title></svg>
+            <svg ng-show="!email.flagged"><use xlink:href="#icon-star" /><title>未加标签</title></svg>
+          </li>
+          <li class="mail-list-entry__flags-encrypted">
+            <svg ng-show="email.encrypted" wo-tooltip="#encrypted-info"><use xlink:href="#icon-encrypted" /></svg>
+          </li>
+          <li class="mail-list-entry__flags-answered" ng-show="!email.unread && email.answered">
+            <svg><use xlink:href="#icon-reply" /><title>答复</title></svg>
+          </li>
+          <li class="mail-list-entry__flags-attachment">
+            <svg><use xlink:href="#icon-attachment" /><title>附件</title></svg>
+          </li>
+        </ul>
+        <h3 class="mail-list-entry__name">
+          <span ng-show="!email.from" class="spinner"></span>
+          {{email.from[0].name || email.from[0].address}}
+        </h3>
+        <div class="mail-list-entry__subject">
+          <strong>{{email.from ? (email.subject || '无主题') : ''}}</strong>
+          <span>
+            {{email.body ? email.body.substr(0, 200) : ''}}
+          </span>
+        </div>
+        <div class="mail-list-entry__attachment">
+          <svg><use xlink:href="#icon-attachment" /><title>附件</title></svg>
+        </div>
+        <time class="mail-list-entry__time">{{ formatDate(email.sentDate) }}</time>
+        <div class="mail-list-entry__excerpt">{{email.body ? email.body.substr(0, 200) : ''}}</div>
+        <div class="mail-list-entry__encrypted">
+          <svg ng-show="email.encrypted"><use xlink:href="#icon-encrypted" /><title>加密</title></svg>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <footer ng-include="'tpl/status-display.html'"></footer>
+
+  <!-- tooltips -->
+  <div id="encrypted-info" class="tooltip">
+    <div class="tooltip__arrow"></div>
+    <div class="tooltip__content">邮件已加密.</div>
+  </div>
+
+</div><!--/mail-list-->
